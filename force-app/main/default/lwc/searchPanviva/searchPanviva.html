@@ -1,0 +1,14 @@
+<template>
+  <lightning-card>
+    <h3 slot="title">
+      <lightning-icon icon-name="action:preview" size="small" class="slds-m-right_small"></lightning-icon>
+      Search Panviva
+    </h3>
+    <div class="slds-p-horizontal_medium">
+      <lightning-input variant="label-hidden" onkeypress={handleKeyPress} type="search"></lightning-input>
+      <p class="slds-p-horizontal_medium">
+        {notificationMessage}
+      </p>
+    </div>
+  </lightning-card>
+</template>

@@ -1,0 +1,21 @@
+<template>
+  <lightning-card class="slds-p-vertical_small slds-p-horizontal_medium">
+    <template if:true={artefact}>
+      <div slot="title">
+        <lightning-icon icon-name="custom:custom82" size="small" class="slds-m-right_small"></lightning-icon>
+        {artefact.title}
+      </div>
+      <lightning-button-icon icon-name="action:description" alternative-text="See more in Panviva" slot="actions"
+        onclick={handleZoomOut}></lightning-button-icon>
+      <template for:each={artefactAsPlaintext} for:item="node">
+        <p class="slds-p-horizontal_medium" key={node.key}>{node.text}</p>
+      </template>
+    </template>
+
+    <template if:false={artefact}>
+      <div class="slds-p-vertical_medium">
+        <lightning-spinner class="slds-align_absolute-center" alternative-text="Loading"></lightning-spinner>
+      </div>
+    </template>
+  </lightning-card>
+</template>
