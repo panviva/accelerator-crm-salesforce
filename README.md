@@ -47,7 +47,7 @@ In the current implementation, the context used is the component's location.
 Here's what that looks like:
 ![help me example](documentation/images/help-me-example.PNG)
 
-> > Note: This component uses the `live/csh` apis.
+> Note: This component uses the `live/csh` apis.
 
 ## Disclaimer 
 This codebase is meant to be a quickstart. Use our code as a starting point. Please validate before deploying. 
