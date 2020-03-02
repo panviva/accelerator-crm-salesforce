@@ -19,7 +19,7 @@ It's meant to give you a quick answer based on context.
 Quick answers are derived from Panviva Artefacts. Quick answers also allow you to navigate to the associated Panviva Document.
 
 Here's an example of a relevant artefact being pulled via the APIs.
-![quick answers example](documentation/images/quick-answers-example.PNG)
+![quick answers example](documentation/images/quick-answers-example.png)
 
 You can supercharge your integration by search/filter/facet based on context derived from within salesforce. To do so, look at the code in [quickAnswers.js:44](https://github.com/panviva/accelerator-crm-salesforce/blob/master/force-app/main/default/lwc/quickAnswers/quickAnswers.js#L44). 
 
