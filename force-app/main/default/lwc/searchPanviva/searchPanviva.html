@@ -2,13 +2,28 @@
   <lightning-card>
     <h3 slot="title">
       <lightning-icon icon-name="action:preview" size="small" class="slds-m-right_small"></lightning-icon>
-      Search Panviva
+      Search Panviva      
     </h3>
     <div class="slds-p-horizontal_medium">
-      <lightning-input variant="label-hidden" onkeypress={handleKeyPress} type="search"></lightning-input>
-      <p class="slds-p-horizontal_medium">
-        {notificationMessage}
+      <lightning-input variant="label-hidden" onkeypress={handleKeyPress} type="search"></lightning-input>      
+      <p class="slds-p-horizontal_medium">   
+        {notificationMessage}     
+        <lightning-button if:true={artefacts} variant="destructive-text" label="Clear Results" title="Clear results" onclick={handleClearResults} class="slds-m-left_x-small"></lightning-button>        
       </p>
+      <template if:true={artefacts} for:each={artefacts} for:item="artefact">
+        <lightning-card key={artefact.id} class="slds-p-vertical_small slds-p-horizontal_medium">          
+            <div slot="title">
+              <lightning-icon icon-name="custom:custom82" size="small" class="slds-m-right_small"></lightning-icon>
+              {artefact.title}
+            </div>
+            <lightning-button-icon data-id={artefact.panvivaDocumentId} icon-name="action:description" alternative-text="See more in Panviva" slot="actions"
+              onclick={handleZoomOut}></lightning-button-icon>
+            <template for:each={artefact.content} for:item="node">
+              <p class="slds-p-horizontal_medium" if:true={node.isText} key={node.id}>{node.text}</p>
+            </template>
+          
+        </lightning-card>
+      </template>
     </div>
   </lightning-card>
 </template>

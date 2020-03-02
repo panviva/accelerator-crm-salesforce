@@ -19,7 +19,7 @@ import liveDocument from "@salesforce/apex/PanvivaSdk.liveDocument";
 import artefactSearch from "@salesforce/apex/PanvivaSdk.artefactSearch";
 
 export default class QuickAnswers extends LightningElement {
-  @track artefact;
+  @track artefact;  
   @track artefactAsPlaintext = [];
   @track relatedDocument;
   @wire(getRecord, {

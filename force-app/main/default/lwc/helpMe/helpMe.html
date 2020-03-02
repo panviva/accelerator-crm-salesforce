@@ -1,0 +1,22 @@
+<template>
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+      <h2 class="slds-text-heading_small slds-m-bottom_medium">
+        <lightning-icon icon-name="action:preview" size="small" class="slds-m-right_small"></lightning-icon>
+         Help Me <code> panviva</code>.
+      </h2>
+      <div class="slds-card">
+          <div class="slds-m-around_medium">
+              <p class="slds-text-heading_x-small slds-m-bottom_medium">
+                  Let's gather context and search for appropriate guidance. </p>
+              <!-- Toggle visibility of a content block when clicked -->
+              <lightning-button label={toggleButtonLabel} title="Toggle content action" icon-name={toggleIconName}
+                  onclick={handleClick}>
+              </lightning-button>
+          </div>
+          <div class="slds-m-vertical_large slds-m-around_medium lgc-id_content-toggle">
+              {notificationMessage}
+          </div>
+      </div>
+      
+  </div>
+</template>

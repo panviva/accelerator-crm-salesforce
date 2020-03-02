@@ -10,22 +10,47 @@ We're using lightening web components.
 We have built 3 components, namely:
 - quickAnswers
 - searchPanviva
-- helpMe (coming soon)
+- helpMe
 
 ### quickAnswers
+
 It's meant to give you a quick answer based on context.
-Quick answers are derived from Panviva Artefacts.
-Quick answers also allow you to navigate to the associated Panviva Document.
-In the default example it pulls a random artefact. 
-You can supercharge your integration by search/filter/facet based on context derived from within salesforce.
+
+Quick answers are derived from Panviva Artefacts. Quick answers also allow you to navigate to the associated Panviva Document.
+
+Here's an example of a relevant artefact being pulled via the APIs.
+![quick answers example](documentation/images/quick-answers-example.PNG)
+
+You can supercharge your integration by search/filter/facet based on context derived from within salesforce. To do so, look at the code in [quickAnswers.js:44](https://github.com/panviva/accelerator-crm-salesforce/blob/master/force-app/main/default/lwc/quickAnswers/quickAnswers.js#L44). 
 
 ### searchPanviva
-Related Panviva Documents can be sent to a logged in user's Panviva window.
-This example is running a "Search" where the search results are shown within Panviva window.
-You could also show the first document by using "showFirstResult:true" on PanvivaSdk.liveSearch.
+This components allows you to search for:
+- quick answers (via panviva `artefacts` or `knowledge nuggets`)
+- full content search (via panviva's `live apis`)
+
+As we want to keep the user focused on the task that they're completing, we allow the user to query & display quick answers within the salesforce component.
+
+AND
+
+Populate the user's panviva window with appropriate search results.
+
+> Note: You could also show the first document by using "showFirstResult:true" on PanvivaSdk.liveSearch.
+
+Here's what that looks like:
+![search panviva example](documentation/images/search-panviva-example.PNG)
+
+### helpMe
+This componenet allows you to pull contextual information & show knowledge articles based on context specified.
+
+In the current implementation, the context used is the component's location.
+
+Here's what that looks like:
+![help me example](documentation/images/help-me-example.PNG)
+
+> > Note: This component uses the `live/csh` apis.
 
 ## Disclaimer 
-Meant to be a quickstart. Use our code as a starting point. Validate before deploying.
+This codebase is meant to be a quickstart. Use our code as a starting point. Please validate before deploying. 
 
 ## Pre Requisites
 

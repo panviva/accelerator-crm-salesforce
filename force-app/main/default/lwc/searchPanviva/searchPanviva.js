@@ -17,9 +17,11 @@ import USER_ID from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 // import panviva api helpers
 import liveSearch from "@salesforce/apex/PanvivaSdk.liveSearch";
+import artefactSearch from "@salesforce/apex/PanvivaSdk.artefactSearch";
 
 
 export default class SearchPanviva extends LightningElement {
+  @track artefacts;
   @track errorMessage;
   @track notificationMessage;
   @wire(getRecord, {
@@ -39,16 +41,63 @@ export default class SearchPanviva extends LightningElement {
   // handling user input
   handleKeyPress({ code: keyCode, target: { value: query } }) {
     if (keyCode === "Enter") {
+      // clear out previous results
+      this.artefacts = null;
+      this.notificationMessage = `Searching for "${query}".`;
+
       liveSearch({ username: this.username, query: query })
         .then(result => {
-          this.notifyUsers('info', `Searching "${query}" within panviva for user "${this.username}".`);
-          this.notificationMessage = `Searching for "${query}".`
+          this.notifyUsers('info', `Searching "${query}" within panviva for user "${this.username}".`);          
         })
         .catch(error => {
           this.notifyUsers('warning', `That didn\'t work.\n\nPlease validate your settings.`);
           this.errorMessage = error.body.message;
         });
+
+      artefactSearch({ simplequery: query, pageLimit: "3" })
+        .then(response => {
+          let artefactsJson = JSON.parse(response);
+          if (artefactsJson && artefactsJson.results && artefactsJson.results.length && artefactsJson.results.length > 0) {
+            let tempArtefacts = artefactsJson.results;
+            for (let i = 0; i < tempArtefacts.length; i++) {
+              for (let j = 0; j < tempArtefacts[i].content.length; j++) {
+                tempArtefacts[i].content[j].id = j;
+                tempArtefacts[i].content[j].isText = tempArtefacts[i].content[j].mediaType == 'text/plain';
+              }
+            }
+            this.artefacts = tempArtefacts;
+            this.notificationMessage = `Found ${this.artefacts.length} quick answers for "${query}". You may want to look at your panviva window for more results.`;
+          } else {
+            this.artefacts = null;
+            var message = `Sorry, I searched for "${query}" but could\'t find anything for you. You may want to look at your panviva window for more results.`;
+            this.notificationMessage = message;
+            this.notifyUsers('warning', message);
+          }
+        })
+        .catch(error => {
+          this.notifyUsers('warning', `That didn\'t work.\n\nPlease validate your settings.`);
+        });
     }
+  }
+
+  // allow users to see related document 
+  handleZoomOut() {
+    // get the related document id
+    var documentId = event.target.dataset.id;
+    if(documentId){
+      liveDocument({ username: this.username, documentId: documentId })
+      .then(response => {
+        this.notifyUsers('info', `Sent related panviva document #${documentId} to user "${this.username}".`);
+      })
+      .catch(error => {
+        this.notifyUsers('warning', 'This didn\'t work.\n\nPlease validate your settings.');
+      });
+    }
+  }
+
+  handleClearResults() {
+    this.artefacts = null;
+    this.notificationMessage = null;
   }
 
   // notify users
