@@ -6,11 +6,11 @@
             "c/quickAnswers": [
                 "quickAnswers/quickAnswers.js"
             ],
-            "c/searchPanviva": [
-                "searchPanviva/searchPanviva.js"
-            ],
             "c/helpMe": [
                 "helpMe/helpMe.js"
+            ],
+            "c/searchPanviva": [
+                "searchPanviva/searchPanviva.js"
             ]
         }
     },

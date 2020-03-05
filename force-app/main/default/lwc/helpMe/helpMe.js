@@ -15,6 +15,7 @@ import USER_ID from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 // import panviva api helpers
 import liveSearch from "@salesforce/apex/PanvivaSdk.liveSearch";
+import liveCsh from "@salesforce/apex/PanvivaSdk.liveCsh";
 // import CurrentPageReference toi get context
 import { CurrentPageReference, NavigationMixin } from 'lightning/navigation';
 export default class HelpMe extends LightningElement {

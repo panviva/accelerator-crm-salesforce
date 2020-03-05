@@ -17,6 +17,7 @@ import USER_ID from '@salesforce/user/Id';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 // import panviva api helpers
 import liveSearch from "@salesforce/apex/PanvivaSdk.liveSearch";
+import liveDocument from "@salesforce/apex/PanvivaSdk.liveDocument";
 import artefactSearch from "@salesforce/apex/PanvivaSdk.artefactSearch";
 
 
@@ -81,10 +82,11 @@ export default class SearchPanviva extends LightningElement {
   }
 
   // allow users to see related document 
-  handleZoomOut() {
+  handleZoomOut(event) {
     // get the related document id
-    var documentId = event.target.dataset.id;
+    var documentId = event.target.dataset.id;    
     if(documentId){
+      console.log(`Try opening related panviva document #${documentId} to user "${this.username}".`);
       liveDocument({ username: this.username, documentId: documentId })
       .then(response => {
         this.notifyUsers('info', `Sent related panviva document #${documentId} to user "${this.username}".`);
