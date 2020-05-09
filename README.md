@@ -50,7 +50,19 @@ Here's what that looks like:
 > Note: This component uses the `live/csh` apis.
 
 ## Disclaimer 
-This codebase is meant to be a quickstart. Use our code as a starting point. Please validate before deploying. 
+
+### Liability
+Panviva is not legally liable for your usage of our free Integration Accelerators. This Integration Accelerator has been made available for legitimate business purposes alongside the usage of the Panviva platform. We retain the right to revoke your account if we find you have used our Integration Accelerators for other purposes.
+
+### Intellectual Property
+Panviva retains all rights to all Integration Accelerators provided within https://github.com/panviva/ . Reselling or white labelling of the Integration Accelerator without our express written consent is prohibited.
+
+### Usage, Support & Availability Disclaimer
+The Panviva Integration Accelerators are provided "as is". It does not come with any support or guarantees of expected behaviour or endpoint / uptime availability.
+Your use of the Integration Accelerator is at your own risk and Panviva will not be liable for your usage or harm from your usage. You agree to use the Integration Accelerator at your own discretion and hold Panviva as a company and team harmless from all liability or costs arising out of your use of the Integration Accelerator.
+
+
+
 
 ## Pre Requisites
 
