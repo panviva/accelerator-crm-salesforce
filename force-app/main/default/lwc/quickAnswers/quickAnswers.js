@@ -17,11 +17,15 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 // import panviva api helpers
 import liveDocument from "@salesforce/apex/PanvivaSdk.liveDocument";
 import artefactSearch from "@salesforce/apex/PanvivaSdk.artefactSearch";
+// import CurrentPageReference toi get context
+import { CurrentPageReference, NavigationMixin } from 'lightning/navigation';
 
 export default class QuickAnswers extends LightningElement {
   @track artefact;  
   @track artefactAsPlaintext = [];
   @track relatedDocument;
+  @track notificationMessage;
+  @track query;
   @wire(getRecord, {
     recordId: USER_ID,
     fields: [EMAIL_FIELD]
@@ -36,6 +40,14 @@ export default class QuickAnswers extends LightningElement {
     }
   }
 
+  // NOTE: This can be used for "context"
+  // Injects the page reference that describes the current page
+  @wire(CurrentPageReference) pageRef;
+
+  get currentPageReference() {
+    return this.pageRef ? this.pageRef : null;
+  }
+
   // call method on load
   connectedCallback() {
     // Note to developer: 
@@ -45,8 +57,42 @@ export default class QuickAnswers extends LightningElement {
     // to get you relevent 'quick answers' or 'snippets' or 'artefacts'
     // displayed within your component. 
     // You could search/filter/facet based on context derived from salesforce.
+
+    // In this example we derive context based on the location of the widget
+    if (this.currentPageReference && this.currentPageReference.attributes && this.currentPageReference.attributes.pageName) {
+      // Grab context from the "Page Name"
+      this.query = `sf-page-guidance-${this.currentPageReference.attributes.pageName}`.toLowerCase();
+      this.notificationMessage = `Using location to determine context for assitance. 
+                                  \nThis is guidance associated with Salesforce's "${this.currentPageReference.attributes.pageName}" page.
+                                  \nLookup quick answers with scope ${this.query}..`;
+    } else {
+      // Use url to determine context
+      var url = window.location.href;
+      var urlComponents = url.split('lightning/r/');
+      if (urlComponents && urlComponents.length == 2) {
+        // get record type
+        var componentData = urlComponents[1].split('/');
+        if (componentData && componentData.length > 2) {
+          this.query = `sf-page-guidance-${componentData[0]}`.toLowerCase();
+          this.notificationMessage = `Using location to determine context for assitance. 
+                                      \nThis is guidance associated with Salesforce's "${componentData[0]}" page.\
+                                      \nLookup quick answers with scope ${this.query}..`;
+
+        }
+
+      }
+    }
+    
+    // If we happen to get a valid query we'll filter with it. 
     let initalQuery = '*';
-    artefactSearch({ simplequery: initalQuery })
+    let artefactSearchPayload = { simplequery: initalQuery };
+    let notifyErrorMessage = `Sorry, I searched for "${initalQuery}" but could\'t find anything for you.`;
+    if(this.query){
+      artefactSearchPayload.filter = `metaData/scope/values/any(scope: scope eq '${this.query}')`;
+      notifyErrorMessage = `Sorry, I searched for quick answers with the scope set to "${this.query}" but could\'t find anything for you.`;
+    }
+
+    artefactSearch(artefactSearchPayload)
       .then(response => {
         let artefacts = JSON.parse(response);
         if (artefacts && artefacts.results && artefacts.results.length && artefacts.results.length > 0) {
@@ -61,7 +107,7 @@ export default class QuickAnswers extends LightningElement {
           this.notifyUsers('info', `Found ${artefacts.results.length} results. Showing you the top result.`);
 
         } else {
-          this.notifyUsers('warning', `Sorry, I searched for "${initalQuery}" but could\'t find anything for you.`);
+          this.notifyUsers('warning', notifyErrorMessage);
         }
       })
       .catch(error => {
