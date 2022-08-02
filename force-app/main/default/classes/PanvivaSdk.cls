@@ -46,7 +46,7 @@ public with sharing class PanvivaSdk {
             new Map<String, Object> {
                 'username' => existsOrThrow(username, 'The liveDocument API requires a username'),
                 'id' => existsOrThrow(documentId, 'The liveDocument API requires a document id'), 
-                'location' => String.isBlank(location) ? '0' : location,
+                'location' => String.isBlank(location) ? '-1' : location,
                 'maximizeClient' => maximizeClient != null ? maximizeClient : true
             }
         );
