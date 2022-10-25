@@ -1,0 +1,27 @@
+<template>
+    <lightning-card>
+      <h3 slot="title">
+        <lightning-icon icon-name="action:preview" size="small" class="slds-m-right_small"></lightning-icon>
+        Search Panviva Core    
+      </h3>
+      <div class="slds-p-horizontal_medium">
+        <lightning-input variant="label-hidden" onkeypress={handleKeyPress} type="search"></lightning-input>      
+        <p class="slds-p-horizontal_medium">   
+          {notificationMessage}     
+          <lightning-button if:true={searchResults} variant="destructive-text" label="Clear Results" title="Clear results" onclick={handleClearResultsCore} class="slds-m-left_x-small"></lightning-button>        
+        </p>
+        <template if:true={searchResults} for:each={searchResults} for:item="searchResult">
+          <lightning-card key={searchResult.key} class="slds-p-vertical_small slds-p-horizontal_medium">          
+              <div slot="title">
+                <lightning-icon icon-name="custom:custom82" size="small" class="slds-m-right_small"></lightning-icon>
+                {searchResult.name}
+              </div>
+              <lightning-button-icon data-id={searchResult.id} icon-name="action:description" alternative-text="See more in Panviva" slot="actions"
+                onclick={handleZoomOutCore}></lightning-button-icon>
+              <p class="slds-p-horizontal_medium">{searchResult.description}</p>
+            
+          </lightning-card>
+        </template>
+      </div>
+    </lightning-card>
+  </template>
