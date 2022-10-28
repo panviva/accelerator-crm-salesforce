@@ -24,6 +24,7 @@ export default class QuickAnswers extends LightningElement {
   @track artefact;
   @track artefactAsPlaintext = [];
   @track relatedDocument;
+  @track linkedArtefactList = [];
   @track notificationMessage;
   @track query;
   @wire(getRecord, {
@@ -62,41 +63,7 @@ export default class QuickAnswers extends LightningElement {
   }
 
   // call method on load
-  renderedCallback() {
-
-    // alert("callback triggered");
-    // document.addEventListener("DOMContentLoaded", () => {
-    //   var tabNames = [
-    //     "FeedItem.TextPost",
-    //     "Case.LogACall",
-    //     "FeedItem.PollPost",
-
-    //   ];
-
-    //   tabNames.forEach(tabName => {
-    //     const tabElement = document.querySelector('[data-tab-name="' + tabName + '"]');
-
-    //     if (!tabElement) {
-    //       return;
-    //     }
-
-    //     const config = { attributes: true };
-
-    //     const callback = (mutationList, observer) => {
-    //       mutationList.forEach(mutation => {
-    //         if (mutation.type === 'attributes') {
-    //           if (mutation.target.getAttribute('aria-selected') === "true") {
-    //             console.log("Selected " + tabName);
-    //           }
-    //         }
-    //       });
-    //     };
-
-    //     const observer = new MutationObserver(callback);
-    //     observer.observe(tabElement, config);
-    //   });
-    // })
-
+  async connectedCallback() {
     // Note to developer: 
     // -----------------
     // As this is a quick start, the inital query is just '*'.
@@ -108,7 +75,7 @@ export default class QuickAnswers extends LightningElement {
     // In this example we derive context based on the location of the widget
     if (this.currentPageReference && this.currentPageReference.attributes && this.currentPageReference.attributes.pageName) {
       // Grab context from the "Page Name"
-      this.query = `sf-page-guidance-${"home"}`.toLowerCase();
+      this.query = `sf-page-guidance-v2-${this.currentPageReference.attributes.pageName}`.toLowerCase();
       this.notificationMessage = `Using location to determine context for assitance. 
                                   \nThis is guidance associated with Salesforce's "${this.currentPageReference.attributes.pageName}" page.
                                   \nLookup quick answers with scope ${this.query}..`;
@@ -120,13 +87,11 @@ export default class QuickAnswers extends LightningElement {
         // get record type
         var componentData = urlComponents[1].split('/');
         if (componentData && componentData.length > 2) {
-          this.query = `sf-page-guidance-${"home"}`.toLowerCase();
+          this.query = `sf-page-guidance-v2-${componentData[0]}`.toLowerCase();
           this.notificationMessage = `Using location to determine context for assitance. 
                                       \nThis is guidance associated with Salesforce's "${componentData[0]}" page.\
                                       \nLookup quick answers with scope ${this.query}..`;
-
         }
-
       }
     }
 
@@ -137,6 +102,21 @@ export default class QuickAnswers extends LightningElement {
     if (this.query) {
       artefactSearchPayload.filter = `metaData/scope/values/any(scope: scope eq '${this.query}')`;
       notifyErrorMessage = `Sorry, I searched for quick answers with the scope set to "${this.query}" but could\'t find anything for you.`;
+    }
+
+    try {
+      const artefactsJson = await artefactSearch(artefactSearchPayload);
+      const artefacts = JSON.parse(artefactsJson);
+      if (artefacts?.results?.length > 0) {
+        const [overviewArtefact] = artefacts.results;
+        if (overviewArtefact?.metaData?.linkedScopes?.values > 0) {
+          
+        }
+      }
+    } catch (error) {
+
+    } finally  {
+
     }
 
     artefactSearch(artefactSearchPayload)
