@@ -22,8 +22,10 @@ import { CurrentPageReference, NavigationMixin } from 'lightning/navigation';
 
 export default class QuickAnswers extends LightningElement {
   @track artefact;
-  @track artefactAsPlaintext = [];
+  @track artefactAsPlaintext;
   @track relatedDocument;
+  @track overviewArtefact;
+  @track overviewMode = true;
   @track linkedArtefactList = [];
   @track notificationMessage;
   @track query;
@@ -41,25 +43,12 @@ export default class QuickAnswers extends LightningElement {
     }
   }
 
-  value = "CaseOverview";
-
   // NOTE: This can be used for "context"
   // Injects the page reference that describes the current page
   @wire(CurrentPageReference) pageRef;
 
   get currentPageReference() {
     return this.pageRef ? this.pageRef : null;
-  }
-
-  get options() {
-    var dropdownValues = [
-      { label: 'Case Overview', value: 'CaseOverview' },
-      { label: 'Log a Call', value: 'LogACall' },
-      { label: 'Activating a Case', value: 'ActivateCase' },
-      { label: 'Creating a New Task', value: 'NewTask' }
-    ];
-
-    return dropdownValues;
   }
 
   // call method on load
@@ -73,6 +62,7 @@ export default class QuickAnswers extends LightningElement {
     // You could search/filter/facet based on context derived from salesforce.
 
     // In this example we derive context based on the location of the widget
+
     if (this.currentPageReference && this.currentPageReference.attributes && this.currentPageReference.attributes.pageName) {
       // Grab context from the "Page Name"
       this.query = `sf-page-guidance-v2-${this.currentPageReference.attributes.pageName}`.toLowerCase();
@@ -109,37 +99,38 @@ export default class QuickAnswers extends LightningElement {
       const artefacts = JSON.parse(artefactsJson);
       if (artefacts?.results?.length > 0) {
         const [overviewArtefact] = artefacts.results;
-        if (overviewArtefact?.metaData?.linkedScopes?.values > 0) {
-          
+        if (overviewArtefact?.metaData?.linkedScope?.values?.length > 0) {
+          this.overviewArtefact = overviewArtefact;
+
+          const linkedScopes = overviewArtefact.metaData.linkedScope.values;
+          const linkedScopeStr = linkedScopes.join();
+          const linkedArtefactsJson = await artefactSearch({
+            advancedquery: "*",
+            filter: `metaData/scope/values/any(scope: search.in(scope, '${linkedScopeStr}'))`,
+          });
+          const linkedArtefactsResponse = JSON.parse(linkedArtefactsJson);
+          let linkedArtefacts = []
+
+          if (linkedArtefactsResponse?.results?.length > 0) {
+            for (const linkedScope of linkedScopes) {
+              linkedArtefacts.push(linkedArtefactsResponse.results.find(artefact => artefact.metaData.scope.values.includes(linkedScope)))
+            }
+          } else {
+            this.notifyUsers('warning', `No linked artefacts were found.\n\nPlease validate your digital orchestrator artefacts.`);
+          }
+
+          this.linkedArtefactList = linkedArtefacts;
+          this.artefact = overviewArtefact;
+          this.artefactAsPlaintext = overviewArtefact.simpleContent;
+        } else {
+          this.notifyUsers('warning', `No overview artefact was found.\n\nPlease validate your digital orchestrator artefacts.`);
         }
+      } else {
+        this.notifyUsers('warning', `That didn\'t work.\n\nPlease validate your settings.`);
       }
     } catch (error) {
-
-    } finally  {
-
+      this.notifyUsers('warning', `That didn\'t work.\n\nPlease validate your settings.`);
     }
-
-    artefactSearch(artefactSearchPayload)
-      .then(response => {
-        let artefacts = JSON.parse(response);
-        if (artefacts && artefacts.results && artefacts.results.length && artefacts.results.length > 0) {
-          this.artefact = artefacts.results[0];
-          this.relatedDocument = this.artefact.panvivaDocumentId;
-          this.artefactAsPlaintext = this.artefact.content.map((node, index) => {
-            return {
-              key: index,
-              text: node.text
-            };
-          });
-          // this.notifyUsers('info', `Found ${artefacts.results.length} results. Showing you the top result.`);
-
-        } else {
-          this.notifyUsers('warning', notifyErrorMessage);
-        }
-      })
-      .catch(error => {
-        this.notifyUsers('warning', `That didn\'t work.\n\nPlease validate your settings.`);
-      });
   }
 
   // allow users to see related document 
@@ -166,5 +157,20 @@ export default class QuickAnswers extends LightningElement {
       alert(message);
     }
     console.log('Panviva', variant, message);
+  }
+
+  selectLinkedArtefact(event) {
+    const artefactId = event.currentTarget.dataset.item;
+    const selectedArtefact = this.linkedArtefactList.find(linkedArtefact => linkedArtefact.id === artefactId);
+
+    this.overviewMode = false;
+    this.artefact = selectedArtefact;
+    this.relatedDocument = selectedArtefact.panvivaDocumentId;
+  }
+
+  returnToOverview() {
+    this.artefact = this.overviewArtefact;
+    this.relatedDocument = this.overviewArtefact.panvivaDocumentId;
+    this.overviewMode = true;
   }
 }

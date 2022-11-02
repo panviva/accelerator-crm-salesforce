@@ -1,28 +1,34 @@
 <template>
-  <lightning-combobox
-  name="progress"
-  label="Ask Panviva"
-  value={value}
-  placeholder="Select Action"
-  options={options}
-  onchange={handleChange} ></lightning-combobox>
   <lightning-card class="slds-p-vertical_small slds-p-horizontal_medium">
     <template if:true={artefact}>
       <div slot="title">
         <lightning-icon icon-name="custom:custom82" size="small" class="slds-m-right_small"></lightning-icon>
         {artefact.title}
       </div>
-      <lightning-button-icon icon-name="action:description" alternative-text="See more in Panviva" slot="actions"
-        onclick={handleZoomOut}></lightning-button-icon>
-      <template for:each={artefactAsPlaintext} for:item="node">
-        <p class="slds-p-horizontal_medium" key={node.key}>{node.text}</p>
+      <template if:false={overviewMode}>
+        <lightning-button-icon icon-name="utility:back" alternative-text="Return to overview" slot="actions"
+          onclick={returnToOverview}></lightning-button-icon>
+      </template>
+
+      <p class="slds-p-horizontal_medium" key={node.key}>{artefact.simpleContent}</p>
+      <template if:true={overviewMode}>
+        <ul class="slds-p-horizontal_medium slds-list_dotted">
+          <template for:each={linkedArtefactList} for:item="linkedArtefact">
+            <li key={linkedArtefact.id}>
+              <a data-item={linkedArtefact.id} onclick={selectLinkedArtefact}>{linkedArtefact.title}</a>
+            </li>
+          </template>
+        </ul>
+      </template>
+      <template if:false={overviewMode}>
+        <lightning-button-icon icon-name="action:description" alternative-text="See more in Panviva" slot="actions"
+          onclick={handleZoomOut}></lightning-button-icon>
       </template>
     </template>
-
     <template if:false={artefact}>
       <div class="slds-p-vertical_medium">
         <lightning-spinner class="slds-align_absolute-center" alternative-text="Loading"></lightning-spinner>
       </div>
     </template>
-  </lightning-card>  
+  </lightning-card>
 </template>
