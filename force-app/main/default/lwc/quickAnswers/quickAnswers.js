@@ -62,13 +62,13 @@ export default class QuickAnswers extends LightningElement {
     const attributes = this.currentPageReference?.attributes;
     if (attributes?.pageName) {
       // Grab context from the "Page Name"
-      this.query = `sf-page-guidance-v2-${attributes.pageName}`.toLowerCase();
+      this.query = `sf-page-guidance-${attributes.pageName}`.toLowerCase();
       this.notificationMessage = `Using location to determine context for assitance. 
                                   \nThis is guidance associated with Salesforce's "${attributes.pageName}" page.
                                   \nLookup quick answers with scope ${this.query}..`;
     } else if (attributes?.objectApiName) {
       // Grab context from the "Record Context (Object API)"
-      this.query = `sf-page-guidance-v2-${attributes.objectApiName}`.toLowerCase();
+      this.query = `sf-page-guidance-${attributes.objectApiName}`.toLowerCase();
       this.notificationMessage = `Using location to determine context for assitance. 
                                   \nThis is guidance associated with Salesforce's "${attributes.objectApiName}" page.
                                   \nLookup quick answers with scope ${this.query}..`;
