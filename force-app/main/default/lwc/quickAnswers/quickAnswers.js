@@ -21,7 +21,7 @@ import artefactSearch from "@salesforce/apex/PanvivaSdk.artefactSearch";
 import { CurrentPageReference, NavigationMixin } from 'lightning/navigation';
 
 export default class QuickAnswers extends LightningElement {
-  @track artefact;  
+  @track artefact;
   @track artefactAsPlaintext = [];
   @track relatedDocument;
   @track notificationMessage;
@@ -59,11 +59,18 @@ export default class QuickAnswers extends LightningElement {
     // You could search/filter/facet based on context derived from salesforce.
 
     // In this example we derive context based on the location of the widget
-    if (this.currentPageReference && this.currentPageReference.attributes && this.currentPageReference.attributes.pageName) {
+    const attributes = this.currentPageReference?.attributes;
+    if (attributes?.pageName) {
       // Grab context from the "Page Name"
-      this.query = `sf-page-guidance-${this.currentPageReference.attributes.pageName}`.toLowerCase();
+      this.query = `sf-page-guidance-${attributes.pageName}`.toLowerCase();
       this.notificationMessage = `Using location to determine context for assitance. 
-                                  \nThis is guidance associated with Salesforce's "${this.currentPageReference.attributes.pageName}" page.
+                                  \nThis is guidance associated with Salesforce's "${attributes.pageName}" page.
+                                  \nLookup quick answers with scope ${this.query}..`;
+    } else if (attributes?.objectApiName) {
+      // Grab context from the "Record Context (Object API)"
+      this.query = `sf-page-guidance-${attributes.objectApiName}`.toLowerCase();
+      this.notificationMessage = `Using location to determine context for assitance. 
+                                  \nThis is guidance associated with Salesforce's "${attributes.objectApiName}" page.
                                   \nLookup quick answers with scope ${this.query}..`;
     } else {
       // Use url to determine context
@@ -82,12 +89,12 @@ export default class QuickAnswers extends LightningElement {
 
       }
     }
-    
+
     // If we happen to get a valid query we'll filter with it. 
     let initalQuery = '*';
     let artefactSearchPayload = { simplequery: initalQuery };
     let notifyErrorMessage = `Sorry, I searched for "${initalQuery}" but could\'t find anything for you.`;
-    if(this.query){
+    if (this.query) {
       artefactSearchPayload.filter = `metaData/scope/values/any(scope: scope eq '${this.query}')`;
       notifyErrorMessage = `Sorry, I searched for quick answers with the scope set to "${this.query}" but could\'t find anything for you.`;
     }

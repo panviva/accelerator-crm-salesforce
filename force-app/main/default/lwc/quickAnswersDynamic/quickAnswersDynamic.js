@@ -63,11 +63,18 @@ export default class QuickAnswers extends LightningElement {
 
     // In this example we derive context based on the location of the widget
 
-    if (this.currentPageReference && this.currentPageReference.attributes && this.currentPageReference.attributes.pageName) {
+    const attributes = this.currentPageReference?.attributes;
+    if (attributes?.pageName) {
       // Grab context from the "Page Name"
-      this.query = `sf-page-guidance-v2-${this.currentPageReference.attributes.pageName}`.toLowerCase();
+      this.query = `sf-page-guidance-v2-${attributes.pageName}`.toLowerCase();
       this.notificationMessage = `Using location to determine context for assitance. 
-                                  \nThis is guidance associated with Salesforce's "${this.currentPageReference.attributes.pageName}" page.
+                                  \nThis is guidance associated with Salesforce's "${attributes.pageName}" page.
+                                  \nLookup quick answers with scope ${this.query}..`;
+    } else if (attributes?.objectApiName) {
+      // Grab context from the "Record Context (Object API)"
+      this.query = `sf-page-guidance-v2-${attributes.objectApiName}`.toLowerCase();
+      this.notificationMessage = `Using location to determine context for assitance. 
+                                  \nThis is guidance associated with Salesforce's "${attributes.objectApiName}" page.
                                   \nLookup quick answers with scope ${this.query}..`;
     } else {
       // Use url to determine context
